@@ -33,4 +33,42 @@ function sqlForPartialUpdate(dataToUpdate, jsToSql) {
   };
 }
 
-module.exports = { sqlForPartialUpdate };
+/** Helper function to generate the sql for filtering the results from GET /companies
+ * 
+ * Input is an object with the parameters to filter by.
+ * 
+ * Input { name, minEmployees, maxEmployees }
+ * 
+ * Output {
+ *    sql: 'name ILIKE $1 AND numEmployee > $2 AND numEmployee > $3',
+ *    values: ['%name%', minEmployees, maxEmployees]
+ * }
+ * 
+ */
+
+function sqlForFilterParams(filterData) {
+  const filterSql = {
+    name: `name ILIKE`,
+    minEmployees: `num_employees >`,
+    maxEmployees: `num_employees <`
+  }
+
+  let i = 1;
+  const sqlArray = [];
+  const valuesArray = [];
+  for(let key in filterData) {    
+    sqlArray.push(`${filterSql[key]} $${i}`);
+    if(key === 'name') {
+      valuesArray.push(`%${filterData[key]}%`);
+    } else {
+      valuesArray.push(filterData[key]);
+    }
+    i++;
+  }
+  return {
+    sql: sqlArray.join(' AND '),
+    values: valuesArray
+  }
+}
+
+module.exports = { sqlForPartialUpdate, sqlForFilterParams };
