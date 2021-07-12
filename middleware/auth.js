@@ -42,6 +42,8 @@ function ensureLoggedIn(req, res, next) {
   }
 }
 
+// function ensureIsAdmin(req, res, next)
+
 
 module.exports = {
   authenticateJWT,

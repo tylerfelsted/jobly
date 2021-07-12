@@ -49,8 +49,8 @@ function sqlForPartialUpdate(dataToUpdate, jsToSql) {
 function sqlForFilterParams(filterData) {
   const filterSql = {
     name: `name ILIKE`,
-    minEmployees: `num_employees >`,
-    maxEmployees: `num_employees <`
+    minEmployees: `num_employees >=`,
+    maxEmployees: `num_employees <=`
   }
 
   let i = 1;

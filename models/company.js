@@ -50,9 +50,9 @@ class Company {
    * */
 
   static async findAll(data) {
-    let filtersSql = ''
+    let filtersSql = ``
     let values = [];
-    if(data) {
+    if(Object.keys(data).length) {
       const filters = sqlForFilterParams(data);
       console.log(filters);
       filtersSql = `WHERE ${filters.sql}`;

@@ -35,7 +35,7 @@ describe("sqlForFilterParams", () => {
         }
         const results = sqlForFilterParams(params);
         expect(results).toEqual({
-            sql: `name ILIKE $1 AND num_employees > $2 AND num_employees < $3`,
+            sql: `name ILIKE $1 AND num_employees >= $2 AND num_employees <= $3`,
             values: ['%test%', 10, 100]
         });
     });
@@ -46,7 +46,7 @@ describe("sqlForFilterParams", () => {
         }
         const results = sqlForFilterParams(params);
         expect(results).toEqual({
-            sql: `name ILIKE $1 AND num_employees < $2`,
+            sql: `name ILIKE $1 AND num_employees <= $2`,
             values: ['%test%', 100]
         });
     });
@@ -57,7 +57,7 @@ describe("sqlForFilterParams", () => {
         }
         const results = sqlForFilterParams(params);
         expect(results).toEqual({
-            sql: `name ILIKE $1 AND num_employees > $2`,
+            sql: `name ILIKE $1 AND num_employees >= $2`,
             values: ['%test%', 10]
         });
     });
@@ -68,7 +68,7 @@ describe("sqlForFilterParams", () => {
         }
         const results = sqlForFilterParams(params);
         expect(results).toEqual({
-            sql: `num_employees > $1 AND num_employees < $2`,
+            sql: `num_employees >= $1 AND num_employees <= $2`,
             values: [10, 100]
         });
     });
@@ -88,7 +88,7 @@ describe("sqlForFilterParams", () => {
         }
         const results = sqlForFilterParams(params);
         expect(results).toEqual({
-            sql: `num_employees > $1`,
+            sql: `num_employees >= $1`,
             values: [10]
         });
     });
@@ -98,7 +98,7 @@ describe("sqlForFilterParams", () => {
         }
         const results = sqlForFilterParams(params);
         expect(results).toEqual({
-            sql: `num_employees < $1`,
+            sql: `num_employees <= $1`,
             values: [100]
         });
     });

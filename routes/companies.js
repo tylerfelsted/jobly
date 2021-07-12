@@ -11,6 +11,7 @@ const Company = require("../models/company");
 
 const companyNewSchema = require("../schemas/companyNew.json");
 const companyUpdateSchema = require("../schemas/companyUpdate.json");
+const filterParametersSchema = require("../schemas/filterParameters.json");
 
 const router = new express.Router();
 
@@ -52,6 +53,11 @@ router.post("/", ensureLoggedIn, async function (req, res, next) {
 
 router.get("/", async function (req, res, next) {
   try {
+    const validator = jsonschema.validate(req.query, filterParametersSchema);
+    if(!validator.valid) {
+      const errs = validator.errors.map(e => e.stack);
+      throw new BadRequestError(errs);
+    }
     const queryParams = req.query;
     const companies = await Company.findAll(queryParams);
     return res.json({ companies });
