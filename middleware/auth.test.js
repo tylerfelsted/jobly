@@ -133,7 +133,7 @@ describe("ensureIsAdminOrUser", function() {
   });
 
   test("unauthorized if not admin or user", function() {
-    // expect.assertions(2);
+    expect.assertions(1);
     const req = {params: {username: "differentUser"}};
     const res = { locals: { user: { username: "test", isAdmin: false } } };
     const next = function(err) {
