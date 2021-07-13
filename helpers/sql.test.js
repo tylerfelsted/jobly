@@ -103,3 +103,29 @@ describe("sqlForFilterParams", () => {
         });
     });
 });
+
+describe("sqlForFilterParams jobs", () => {
+    test("works with equity", () => {
+        const params = {
+            hasEquity: true,
+            minSalary: 40000
+        }
+        const results = sqlForFilterParams(params);
+        expect(results).toEqual({
+            sql: `equity > $1 AND salary >= $2`,
+            values: [0, 40000]
+        });
+    });
+    test("works with hasEquity: false", () => {
+        const params = {
+            hasEquity: false,
+            minSalary: 40000
+        }
+        const results = sqlForFilterParams(params);
+        expect(results).toEqual({
+            sql: `salary >= $1`,
+            values: [40000]
+        });
+    });
+
+});

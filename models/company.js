@@ -45,6 +45,9 @@ class Company {
   }
 
   /** Find all companies.
+   * 
+   * can pass in optional filter data:
+   * { name, minEmployees, maxEmployees }
    *
    * Returns [{ handle, name, description, numEmployees, logoUrl }, ...]
    * */

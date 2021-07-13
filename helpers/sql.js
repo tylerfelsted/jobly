@@ -50,20 +50,29 @@ function sqlForFilterParams(filterData) {
   const filterSql = {
     name: `name ILIKE`,
     minEmployees: `num_employees >=`,
-    maxEmployees: `num_employees <=`
+    maxEmployees: `num_employees <=`,
+    title: `title ILIKE`,
+    minSalary: `salary >=`,
+    hasEquity: `equity >`
   }
 
   let i = 1;
   const sqlArray = [];
   const valuesArray = [];
-  for(let key in filterData) {    
-    sqlArray.push(`${filterSql[key]} $${i}`);
-    if(key === 'name') {
+  for(let key in filterData) {
+    
+    if((key === 'hasEquity' && filterData[key]) || key !== 'hasEquity') {
+      sqlArray.push(`${filterSql[key]} $${i}`);
+      i++;
+    }
+    if(key === 'name' || key === 'title') {
       valuesArray.push(`%${filterData[key]}%`);
-    } else {
+    } else if(key === 'hasEquity' && filterData[key]) {
+      valuesArray.push(0);
+    } else if(key !== 'hasEquity') {
       valuesArray.push(filterData[key]);
     }
-    i++;
+    
   }
   return {
     sql: sqlArray.join(' AND '),
