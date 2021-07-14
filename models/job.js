@@ -17,20 +17,20 @@ class Job {
    * */
   static async create({title, salary, equity, companyHandle}) {
     // check that the company exists
-    const companyCheck = db.query(
+    const companyCheck = await db.query(
       `SELECT handle 
       FROM companies 
-      WHERE hanlde = $1`,
+      WHERE handle = $1`,
       [companyHandle]);
     
     if(!companyCheck.rows[0]) {
       throw new BadRequestError(`Company does not exist: ${companyHandle}`);
     }
 
-    const result = db.query(
+    const results = await db.query(
       `INSERT INTO jobs (title, salary, equity, company_handle)
       VALUES ($1, $2, $3, $4)
-      RETURNING id, title, salary, equity, company_handle AS companyHandle`,
+      RETURNING id, title, salary, equity, company_handle AS "companyHandle"`,
       [title, salary, equity, companyHandle]);
 
     const job = results.rows[0]
@@ -50,7 +50,6 @@ class Job {
     let values = [];
     if(Object.keys(data).length) {
       const filters = sqlForFilterParams(data);
-      console.log(filters);
       filtersSql = `WHERE ${filters.sql}`;
       values = filters.values;
     }
@@ -59,7 +58,7 @@ class Job {
                   title,
                   salary,
                   equity,
-                  company_handle AS companyHandle
+                  company_handle AS "companyHandle"
            FROM jobs ${filtersSql}
            ORDER BY title`, values);
     return companiesRes.rows;
@@ -73,8 +72,8 @@ class Job {
    **/
 
   static async get(id) {
-    const results = db.query(
-      `SELECT id, title, salary, equity, company_handle AS companyHandle
+    const results = await db.query(
+      `SELECT id, title, salary, equity, company_handle AS "companyHandle"
       FROM jobs
       WHERE id=$1`,
       [id]);
@@ -85,6 +84,18 @@ class Job {
 
     return job;
   }
+
+ /** Update job data with `data`.
+   *
+   * This is a "partial update" --- it's fine if data doesn't contain all the
+   * fields; this only changes provided ones.
+   *
+   * Data can include: {title, salary, equity}
+   *
+   * Returns {id, title, salary, equity, companyHandle}
+   *
+   * Throws NotFoundError if not found.
+   */
 
   static async update(id, data) {
     const { setCols, values } = sqlForPartialUpdate(
@@ -127,3 +138,5 @@ class Job {
     if (!job) throw new NotFoundError(`No job: ${id}`);
   }
 }
+
+module.exports = Job;
