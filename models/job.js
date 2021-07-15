@@ -33,8 +33,8 @@ class Job {
       RETURNING id, title, salary, equity, company_handle AS "companyHandle"`,
       [title, salary, equity, companyHandle]);
 
-    const job = results.rows[0]
-
+    const job = results.rows[0];
+    
     return job;
   }
 
