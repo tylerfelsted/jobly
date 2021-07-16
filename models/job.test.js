@@ -8,22 +8,11 @@ const {
   commonBeforeAll,
   commonBeforeEach,
   commonAfterEach,
-  commonAfterAll
+  commonAfterAll,
+  jobIds
 } = require("./_testCommon");
 
-let jobIds;
-
-beforeAll(async () => {
-  await commonBeforeAll();
-  const jobs = await db.query(`
-    INSERT INTO jobs(title, salary, equity, company_handle)
-    VALUES ('J1', 10000, 0.01, 'c1'),
-           ('J2', 20000, 0.02, 'c1'),
-           ('J3', 30000, 0.03, 'c2')
-    RETURNING id`);
-
-  jobIds = jobs.rows.map(j => j.id);
-});
+beforeAll(commonBeforeAll);
 beforeEach(commonBeforeEach);
 afterEach(commonAfterEach);
 afterAll(commonAfterAll);

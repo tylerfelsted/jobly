@@ -58,7 +58,7 @@ router.patch("/:id", ensureLoggedIn, ensureIsAdmin, async (req, res, next) => {
       const errs = validator.errors.map(e => e.stack);
       throw new BadRequestError(errs);
     }
-    const job = await Job.update(req.params.id, updateData);
+    const job = await Job.update(req.params.id, req.body);
     return res.json({job});
   } catch(err) {
     return next(err);

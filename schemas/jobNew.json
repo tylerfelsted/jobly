@@ -13,14 +13,11 @@
       "minimum": 0
     },
     "equity": {
-      "type": "number",
-      "minimum": 0,
-      "maximum": 1
+      "type": "string",
+      "pattern": "0|(0?\\.[0-9]+)"
     },
     "companyHandle": {
-      "type": "string",
-      "minLength": 1,
-      "maxLength": 10
+      "type": "string"
     }
   },
   "additionalProperties": false,
