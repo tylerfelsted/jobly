@@ -52,12 +52,12 @@ router.post("/", ensureLoggedIn, ensureIsAdmin, async (req, res, next) => {
 
 router.get("/", async (req, res, next) => {
   try{
-    const validator = jsonschema.validate(req.body, jobSearchSchema);
+    const validator = jsonschema.validate(req.query, jobSearchSchema);
     if(!validator.valid) {
       const errs = validator.errors.map(e => e.stack);
       throw new BadRequestError(errs);
     }
-    const jobs = await Job.findAll(req.body);
+    const jobs = await Job.findAll(req.query);
     return res.json({ jobs })
   } catch(err) {
     return next(err);

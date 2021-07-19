@@ -50,8 +50,10 @@ class Job {
     let values = [];
     if(Object.keys(data).length) {
       const filters = sqlForFilterParams(data);
-      filtersSql = `WHERE ${filters.sql}`;
-      values = filters.values;
+      if(filters.sql) {
+        filtersSql = `WHERE ${filters.sql}`;
+        values = filters.values;
+      }
     }
     const companiesRes = await db.query(
           `SELECT id,

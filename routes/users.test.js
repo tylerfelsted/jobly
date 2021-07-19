@@ -11,6 +11,7 @@ const {
   commonBeforeEach,
   commonAfterEach,
   commonAfterAll,
+  jobIds,
   u1Token,
   u2Token,
   adminToken
@@ -215,6 +216,51 @@ describe("GET /users/:username", function () {
         .get(`/users/nope`)
         .set("authorization", `Bearer ${adminToken}`);
     expect(resp.statusCode).toEqual(404);
+  });
+});
+/********************************** GET /users/:username/jobs/:id */
+
+describe("GET /users/:username/jobs/:id", () => {
+  test("works for requested user", async () => {
+    const resp = await request(app)
+      .post(`/users/u1/jobs/${jobIds[0]}`)
+      .set("authorization", `Bearer ${u1Token}`);
+    expect(resp.statusCode).toBe(200);
+    expect(resp.body).toEqual({applied: jobIds[0]});
+  });
+  test("works for admin", async () => {
+    const resp = await request(app)
+      .post(`/users/u1/jobs/${jobIds[0]}`)
+      .set("authorization", `Bearer ${adminToken}`);
+    expect(resp.statusCode).toBe(200);
+    expect(resp.body).toEqual({applied: jobIds[0]});
+  });
+  test("unauthorized for non-admin users", async () => {
+    const resp = await request(app)
+      .post(`/users/u1/jobs/${jobIds[0]}`)
+      .set("authorization", `Bearer ${u2Token}`);
+    expect(resp.statusCode).toBe(401);
+  });
+  test("not found if user not found", async () => {
+    const resp = await request(app)
+      .post(`/users/badUser/jobs/${jobIds[0]}`)
+      .set("authorization", `Bearer ${adminToken}`);
+    expect(resp.statusCode).toBe(404);
+  });
+  test("not found if job not found", async () => {
+    const resp = await request(app)
+      .post(`/users/u1/jobs/-1`)
+      .set("authorization", `Bearer ${adminToken}`);
+    expect(resp.statusCode).toBe(404);
+  });
+  test("bad request if duplicate application", async () => {
+    await request(app)
+      .post(`/users/u1/jobs/${jobIds[0]}`)
+      .set("authorization", `Bearer ${adminToken}`);
+    const resp = await request(app)
+      .post(`/users/u1/jobs/${jobIds[0]}`)
+      .set("authorization", `Bearer ${adminToken}`);
+    expect(resp.statusCode).toBe(400);
   });
 });
 

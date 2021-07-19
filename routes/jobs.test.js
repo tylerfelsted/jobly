@@ -69,7 +69,7 @@ describe("POST /jobs", function() {
 /************************************** GET /jobs */
 
 describe("GET /jobs", function() {
-	test("works for an anonymous user", async function() {
+	test("works for an anonymous user: without filter", async function() {
 		const resp = await request(app)
 			.get('/jobs');
 		expect(resp.statusCode).toBe(200);
@@ -97,6 +97,27 @@ describe("GET /jobs", function() {
 				companyHandle: 'c2'
 			}
 		]});
+	});
+	test("ok for anonymous user: with filter", async function () {
+		const resp = await request(app).get("/jobs")
+		  .query({title: "J1"});
+		expect(resp.body).toEqual({
+		  jobs: [
+				{
+				  id: jobIds[0],
+				  title: 'J1',
+				  salary: 10000,
+				  equity: '0.01',
+				  companyHandle: "c1"
+				}
+			]
+		});
+	});
+	
+	test("bad request with invalid data", async function() {
+	const resp = await request(app).get("/jobs")
+		.query({hasEquity: 'invalid'});
+	expect(resp.statusCode).toBe(400);
 	});
 });
 

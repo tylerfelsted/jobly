@@ -52,7 +52,7 @@ function sqlForFilterParams(filterData) {
   let i = 1;
   for(let key in filterData) {
     const prefix = key.slice(0,3);
-    const column = (key.slice(3) === "Employees") ? `num_employees` : key.slice(3);
+    const column = (key.slice(3) === "Employees") ? `num_employees` : key.slice(3).toLowerCase();
     switch(prefix) {
       case 'min':
         sqlArray.push(`${column} >= $${i++}`);
@@ -72,7 +72,6 @@ function sqlForFilterParams(filterData) {
         valuesArray.push(`%${filterData[key]}%`);
     }
   }
-  console.log(sqlArray.join(' AND '));
   return {
     sql: sqlArray.join(' AND '),
     values: valuesArray

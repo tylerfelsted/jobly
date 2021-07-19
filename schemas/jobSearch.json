@@ -23,7 +23,7 @@
                 "name"
             ]
         },
-        "salary": {
+        "minSalary": {
             "$id": "#/properties/salary",
             "type": "string",
             "title": "The salary schema",
