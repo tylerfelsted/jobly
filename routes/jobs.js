@@ -15,9 +15,6 @@ const jobSearchSchema = require("../schemas/jobSearch.json");
 
 const router = new express.Router();
 
-
-//TODO: Document these routes
-
 /** POST / { job } =>  { job }
  *
  * company should be { title, salary, equity, companyHandle }
