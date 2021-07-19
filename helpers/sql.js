@@ -46,6 +46,8 @@ function sqlForPartialUpdate(dataToUpdate, jsToSql) {
  * 
  */
 
+
+//TODO: refactor this code to be more reuseable and cleaner
 function sqlForFilterParams(filterData) {
   const filterSql = {
     name: `name ILIKE`,

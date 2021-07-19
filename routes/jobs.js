@@ -15,6 +15,9 @@ const jobSearchSchema = require("../schemas/jobSearch.json");
 
 const router = new express.Router();
 
+
+//TODO: Document these routes
+
 router.post("/", ensureLoggedIn, ensureIsAdmin, async (req, res, next) => {
   try{
     const validator = jsonschema.validate(req.body, jobNewSchema);
