@@ -257,4 +257,32 @@ describe("applyToJob",  function() {
     `);
     expect(applicationRes.rows[0]).toEqual({jobId: jobIds[0], username: "u1"});
   });
+  test("not found with bad username", async function() {
+    try{
+      await User.applyToJob("badUser", jobIds[0]);
+      fail();
+    } catch(err) {
+      expect(err instanceof NotFoundError).toBeTruthy();
+      expect(err.message).toEqual("No user: badUser");
+    }
+  });
+  test("not found with bad jobId", async function() {
+    try{
+      await User.applyToJob("u1", -1);
+      fail();
+    } catch(err) {
+      expect(err instanceof NotFoundError).toBeTruthy();
+      expect(err.message).toEqual("No job with id -1");
+    }
+  });
+  test("bad request with duplicate applications", async function() {
+    try{
+      await User.applyToJob("u1", jobIds[0]);
+      await User.applyToJob("u1", jobIds[0]);
+      fail();
+    } catch(err) {
+      expect(err instanceof BadRequestError).toBeTruthy();
+      expect(err.message).toEqual("Already applied to this job");
+    }
+  });
 });

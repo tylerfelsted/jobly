@@ -229,11 +229,18 @@ class User {
       SELECT username FROM users WHERE username =$1`,
       [username]);
     if(!usernameRes.rows[0]) throw new NotFoundError(`No user: ${username}`);
-    
     const jobIdRes = await db.query(`
       SELECT id FROM jobs WHERE id = $1`,
       [jobId]);
     if(!jobIdRes.rows[0]) throw new NotFoundError(`No job with id ${jobId}`);
+    
+    //duplicate check
+    const duplicateCheck = await db.query(`
+      SELECT username, job_id AS "jobId"
+      FROM applications 
+      WHERE username = $1 AND job_id = $2`,
+      [username, jobId]);
+    if(duplicateCheck.rows[0]) throw new BadRequestError("Already applied to this job")
 
     const result = await db.query(`
       INSERT INTO applications (username, job_id)
