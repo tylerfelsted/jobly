@@ -138,12 +138,17 @@ class User {
         [username],
     );
 
+    if(!userRes.rows[0]) throw new NotFoundError(`No user: ${username}`);
+
     const { firstName, lastName, email, isAdmin } = userRes.rows[0];
-    const jobs = userRes.rows.map(r => r.jobId);
+    const user = {username, firstName, lastName, email, isAdmin};
 
-    const user = {username, firstName, lastName, email, isAdmin, jobs};
+    if(userRes.rows[0].jobId) {
+      const jobs = userRes.rows.map(r => r.jobId);
+      user.jobs = jobs;
+    }
 
-    if (!user) throw new NotFoundError(`No user: ${username}`);
+    
 
     return user;
   }
