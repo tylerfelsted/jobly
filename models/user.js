@@ -118,24 +118,30 @@ class User {
   /** Given a username, return data about user.
    *
    * Returns { username, first_name, last_name, is_admin, jobs }
-   *   where jobs is { id, title, company_handle, company_name, state }
+   *   where jobs is [jobId, jobId, ...]
    *
    * Throws NotFoundError if user not found.
    **/
 
   static async get(username) {
     const userRes = await db.query(
-          `SELECT username,
+          `SELECT u.username,
                   first_name AS "firstName",
                   last_name AS "lastName",
                   email,
-                  is_admin AS "isAdmin"
-           FROM users
-           WHERE username = $1`,
+                  is_admin AS "isAdmin",
+                  job_id AS "jobId"
+           FROM users AS u
+           LEFT JOIN applications AS a
+           ON u.username = a.username
+           WHERE u.username = $1`,
         [username],
     );
 
-    const user = userRes.rows[0];
+    const { firstName, lastName, email, isAdmin } = userRes.rows[0];
+    const jobs = userRes.rows.map(r => r.jobId);
+
+    const user = {username, firstName, lastName, email, isAdmin, jobs};
 
     if (!user) throw new NotFoundError(`No user: ${username}`);
 
@@ -203,6 +209,29 @@ class User {
     const user = result.rows[0];
 
     if (!user) throw new NotFoundError(`No user: ${username}`);
+  }
+
+  //TODO: Document this method
+  static async applyToJob(username, jobId) {
+    //ensure both the username and the jobId are valid
+    const usernameRes = await db.query(`
+      SELECT username FROM users WHERE username =$1`,
+      [username]);
+    if(!usernameRes.rows[0]) throw new NotFoundError(`No user: ${username}`);
+    
+    const jobIdRes = await db.query(`
+      SELECT id FROM jobs WHERE id = $1`,
+      [jobId]);
+    if(!jobIdRes.rows[0]) throw new NotFoundError(`No job with id ${jobId}`);
+
+    const result = await db.query(`
+      INSERT INTO applications (username, job_id)
+      VALUES ($1, $2)
+      RETURNING username, job_id AS "jobId"`,
+      [username, jobId]);
+      const application = result.rows[0];
+
+      return application;
   }
 }
 
