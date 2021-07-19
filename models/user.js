@@ -211,7 +211,13 @@ class User {
     if (!user) throw new NotFoundError(`No user: ${username}`);
   }
 
-  //TODO: Document this method
+  /** Adds an application to the applications table
+   * 
+   * Application contains: username, jobId
+   * 
+   * Returns: { username, jobId }
+   * 
+  */
   static async applyToJob(username, jobId) {
     //ensure both the username and the jobId are valid
     const usernameRes = await db.query(`
