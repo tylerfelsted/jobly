@@ -46,36 +46,33 @@ function sqlForPartialUpdate(dataToUpdate, jsToSql) {
  * 
  */
 
-
-//TODO: refactor this code to be more reuseable and cleaner
 function sqlForFilterParams(filterData) {
-  const filterSql = {
-    name: `name ILIKE`,
-    minEmployees: `num_employees >=`,
-    maxEmployees: `num_employees <=`,
-    title: `title ILIKE`,
-    minSalary: `salary >=`,
-    hasEquity: `equity >`
-  }
-
-  let i = 1;
   const sqlArray = [];
   const valuesArray = [];
+  let i = 1;
   for(let key in filterData) {
-    
-    if((key === 'hasEquity' && filterData[key]) || key !== 'hasEquity') {
-      sqlArray.push(`${filterSql[key]} $${i}`);
-      i++;
+    const prefix = key.slice(0,3);
+    const column = (key.slice(3) === "Employees") ? `num_employees` : key.slice(3);
+    switch(prefix) {
+      case 'min':
+        sqlArray.push(`${column} >= $${i++}`);
+        valuesArray.push(filterData[key]);
+        break;
+      case 'max':
+        sqlArray.push(`${column} <= $${i++}`);
+        valuesArray.push(filterData[key]);
+        break;
+      case 'has':
+        if(filterData[key] === 'true') {
+          sqlArray.push(`${column} > 0`);
+          break;
+        } else break;
+      default:
+        sqlArray.push(`${key} ILIKE $${i++}`);
+        valuesArray.push(`%${filterData[key]}%`);
     }
-    if(key === 'name' || key === 'title') {
-      valuesArray.push(`%${filterData[key]}%`);
-    } else if(key === 'hasEquity' && filterData[key]) {
-      valuesArray.push(0);
-    } else if(key !== 'hasEquity') {
-      valuesArray.push(filterData[key]);
-    }
-    
   }
+  console.log(sqlArray.join(' AND '));
   return {
     sql: sqlArray.join(' AND '),
     values: valuesArray
