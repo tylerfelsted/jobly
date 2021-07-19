@@ -18,6 +18,15 @@ const router = new express.Router();
 
 //TODO: Document these routes
 
+/** POST / { job } =>  { job }
+ *
+ * company should be { title, salary, equity, companyHandle }
+ *
+ * Returns { id, title, salary, equity, companyHandle }
+ *
+ * Authorization required: Admin
+ */
+
 router.post("/", ensureLoggedIn, ensureIsAdmin, async (req, res, next) => {
   try{
     const validator = jsonschema.validate(req.body, jobNewSchema);
@@ -33,6 +42,17 @@ router.post("/", ensureLoggedIn, ensureIsAdmin, async (req, res, next) => {
   }
 });
 
+/** GET / =>  {jobs: [{id, title, salary, equity, companyHandle}, ...]}
+ * 
+ * Can filter on provided search filters:
+ * - hasEquity - true/false - if true, filters for jobs with equity
+ *      if false or omitted, returns all jobs
+ * - minSalary
+ * - title (will find case-insensitive, partial matches)
+ *
+ * Authorization required: none
+ */
+
 router.get("/", async (req, res, next) => {
   try{
     const validator = jsonschema.validate(req.body, jobSearchSchema);
@@ -46,6 +66,14 @@ router.get("/", async (req, res, next) => {
     return next(err);
   }
 });
+
+/** GET /[id]  =>  { job }
+ *
+ *  Company is { id, title, salary, equity, companyHandle }
+ *
+ * Authorization required: none
+ */
+
 router.get("/:id", async (req, res, next) => {
   try{
     const job = await Job.get(req.params.id);
@@ -54,6 +82,18 @@ router.get("/:id", async (req, res, next) => {
     return next(err);
   }
 });
+
+/** PATCH /[id] { fld1, fld2, ... } => { job }
+ *
+ * Patches job data.
+ *
+ * fields can be: { title, salary, equity }
+ *
+ * Returns { id, title, salary, equity, companyHandle }
+ *
+ * Authorization required: Admin
+ */
+
 router.patch("/:id", ensureLoggedIn, ensureIsAdmin, async (req, res, next) => {
   try{
     const validator = jsonschema.validate(req.body, jobUpdateSchema);
@@ -67,6 +107,12 @@ router.patch("/:id", ensureLoggedIn, ensureIsAdmin, async (req, res, next) => {
     return next(err);
   }
 });
+
+/** DELETE /[id]  =>  { deleted: Job id }
+ *
+ * Authorization: Admin
+ */
+
 router.delete("/:id", ensureLoggedIn, ensureIsAdmin, async (req, res, next) => {
   try{
     await Job.remove(req.params.id);
